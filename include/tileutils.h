@@ -1,6 +1,14 @@
 #pragma once
 
 #include <stdlib.h>
+#include "../include/game.h"
+
+// --------------------------------------------------------------------------------------------
+// tile shuffling, ordering and dealing utils
+// a lot of these functions use vars defined in globals.h
+// because it just makes no sense to use array sizes as function parameters
+// i.e there will never be more tiles than TOTAL_TILES_NUM, or more players than PLAYERS, etc
+// --------------------------------------------------------------------------------------------
 
 enum {
 	PIN_1,
@@ -42,7 +50,17 @@ enum {
 	MAN_5_AKA
 };
 
-void GenerateTileSet(int* tileset, size_t size);
+void GenerateTileSet(int* tileset);
+
+// initial deal tiles
+void DealTiles(int* tileset, Player* players);
+
+// draw one tile on a player's turn
+void DrawTile(int* tileset, Player* players);
+
+void OrderHand(Player player);
+
+void DiscardTile(Player* player, int* tile);
 
 void ReplaceRed5(int* tileset, size_t size);
 

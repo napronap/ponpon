@@ -17,7 +17,7 @@
 // tiles
 #define TOTAL_TILES_NUM			(136)
 
-#define TILES_IN_HAND			(13)
+#define TILES_IN_HAND			(14)
 
 // Tiles are represented as follows:
 //-----------------------------------
@@ -32,8 +32,13 @@
 //		Hatsu		32
 //		Chun		33
 //		Dora5		34-36
+//		14th tile 	-1
 //-----------------------------------
 #define INDIVIDUAL_TILES		(37)
+
+#define PLAYERS					(4)
+
+#define TILES_PER_WALL			(34)
 
 
 

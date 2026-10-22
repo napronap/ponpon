@@ -3,6 +3,7 @@
 #include "../include/graphutils.h"
 #include "../include/globals.h"
 #include "../include/tileutils.h"
+#include "../include/game.h"
 
 int main(void) {
 	//----------------------------------------
@@ -15,16 +16,16 @@ int main(void) {
 
 	Texture2D TileTextures[TOTAL_TILES_TEXTURES];
 	int TileSet[TOTAL_TILES_NUM];
+	Player Players[PLAYERS];
 
 	LoadAllTiles(TileTextures);
 
-	GenerateTileSet(TileSet, sizeof(TileSet) / sizeof(TileSet[0]));
+	GenerateTileSet(TileSet);
 
-	int hand[TILES_IN_HAND];
+	SetupPlayers(Players);
 
-	for (int i = 0; i < TILES_IN_HAND; i++) {
-		hand[i] = TileSet[i];
-	}
+	DealTiles(TileSet, Players);
+
 
 
 	while (!WindowShouldClose()) {
@@ -32,7 +33,7 @@ int main(void) {
 
 		ClearBackground(DARKGREEN);
 
-		DrawHand(TileTextures, hand);
+		DrawHand(TileTextures, Players[0].hand);
 
 		EndDrawing();
 	}

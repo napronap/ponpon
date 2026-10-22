@@ -51,7 +51,15 @@ Rectangle GetRectForTileInHand(int margin) {
 
 void DrawHand(Texture2D tilesTxtArr[], int* handTiles) {
 	for (int i = 0; i < TILES_IN_HAND; i++) {
-		int margin = HAND_LEFT_MARGIN + i * TILE_WIDTH + i * TILE_SEPARATION;
+		if(handTiles[i] == -1) continue;
+
+		int drawMargin = 0;
+
+		if (i == TILES_IN_HAND - 1) {
+			drawMargin = 15;
+		}
+
+		int margin = HAND_LEFT_MARGIN + i * TILE_WIDTH + i * TILE_SEPARATION + drawMargin;
 
 		int verticalOffset = 15;
 

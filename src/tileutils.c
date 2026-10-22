@@ -1,30 +1,12 @@
+#include <inttypes.h>
 #include <stdlib.h>
 #include "raylib.h"
 
 #include "../include/tileutils.h"
+#include "../include/globals.h"
 
-void GenerateTileSet(int* tileset, size_t size) {
-
-	// 4 walls of 34 tiles
-	// 17 * 2
-	// al jugar, se roban fichas arriba y dps abajo
-	// dice roll determines wall break
-	// se reparten en los jugadores de 4 en 4 hasta tener 12
-	// despues se hace 1 1 1 1 para la ultima ficha
-	// +1 para el oya (el primer draw desde la live wall)
-	//
-	// decision de que wall romper basada en dados:
-	// 5, 9: East (Dealer)
-	// 2, 6, 10: South
-	// 3, 7, 11: West
-	// 4, 8, 12: North
-	//
-	// las ultimas 14 fichas se usan para la dead wall:
-	// x: drawable, D: dora/kandora, u: uradora, h: haitei (utlima ficha robable, se agrega al final al hacer kan)
-	// x1 x3 D D1 D2 D3 D4 / h2 h4
-	// x2 x4 u u1 u2 u3 u4 / h1 h3
-
-	for (int pos = 0; pos < size; pos++) {
+void GenerateTileSet(int* tileset) {
+	for (int pos = 0; pos < TOTAL_TILES_NUM; pos++) {
 		
 		// the actual type as per the tile enum
 		int type = pos / 4;
@@ -41,13 +23,60 @@ void GenerateTileSet(int* tileset, size_t size) {
 	}
 
 	// shuffle
-	for (int pos = size - 1; pos > 0; pos--) {
+	for (int pos = TOTAL_TILES_NUM - 1; pos > 0; pos--) {
 		int swap = GetRandomValue(0, pos);
 		int copy = tileset[pos];
 
 		tileset[pos] = tileset[swap];
 		tileset[swap] = copy;
 	}
+}
+
+void DealTiles(int* tileset, Player* players) {
+	int dice = GetRandomValue(1,6) + GetRandomValue(1,6);
+
+	int dealerpos = -1;
+
+	for (int i = 0; i < PLAYERS; i++) {
+		if (players[i].current_wind == TON) {
+			dealerpos = i;
+			break;
+		}
+	}
+
+	int startingwall = (dealerpos + dice - 1) % PLAYERS;
+
+	int tileInWall = dice * 2;
+	int wall = startingwall;
+
+	// three rounds of four tiles, then one tile for each player
+	for (int round = 0; round < 4; round++) {
+		int tilesThisRound = round < 3 ? 4 : 1;
+
+		for (int j = 0; j < PLAYERS; j++) {
+			int player = (dealerpos + j) % PLAYERS;
+
+			for (int tile = 0; tile < tilesThisRound; tile++) {
+				int src = wall * TILES_PER_WALL + tileInWall;
+				int dst = round * 4 + tile;
+
+				players[player].hand[dst] = tileset[src];
+
+				tileInWall++;
+
+				if (tileInWall == TILES_PER_WALL) {
+					tileInWall = 0;
+					wall = (wall + PLAYERS - 1) % PLAYERS;
+				}
+			}
+		}
+	}
+
+	// east starts with 14 tiles, the others have an empty final slot
+	for (int i = 0; i < PLAYERS; i++) {
+		players[i].hand[TILES_IN_HAND - 1] = -1;
+	}
+	players[dealerpos].hand[TILES_IN_HAND - 1] = tileset[wall * TILES_PER_WALL + tileInWall];
 }
 
 void ReplaceRed5(int* tileset, size_t size) {
