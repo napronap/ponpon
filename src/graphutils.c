@@ -43,10 +43,8 @@ void LoadAllTiles(Texture2D tilesTxtArr[]) {
 	UnloadImage(tileBg);
 }
 
-Rectangle GetRectForTileInHand(int posInHand) {
-	int margin = HAND_LEFT_MARGIN + posInHand * TILE_WIDTH + posInHand * TILE_SEPARATION;
-
-	Rectangle tileBounds = {margin + SCREEN_WIDTH/2.0f - TILE_WIDTH / 2.0f, (SCREEN_HEIGHT - TILE_HEIGHT - 15) / 2.0f - TILE_HEIGHT/2.0f, TILE_WIDTH, TILE_HEIGHT};
+Rectangle GetRectForTileInHand(int margin) {
+	Rectangle tileBounds = {margin, SCREEN_HEIGHT - TILE_HEIGHT - 15, TILE_WIDTH, TILE_HEIGHT};
 
 	return tileBounds;
 }
@@ -57,7 +55,7 @@ void DrawHand(Texture2D tilesTxtArr[], int* handTiles) {
 
 		int verticalOffset = 15;
 
-		if (CheckCollisionPointRec(GetMousePosition(), GetRectForTileInHand(i))) {
+		if (CheckCollisionPointRec(GetMousePosition(), GetRectForTileInHand(margin))) {
 			verticalOffset = 30;
 		}
 

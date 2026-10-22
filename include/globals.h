@@ -1,7 +1,6 @@
 #pragma once
 
-#define TILES_IN_HAND			(13)
-
+// graphics
 #define SCREEN_WIDTH 			(1460)
 #define SCREEN_HEIGHT			(820)
 
@@ -10,11 +9,33 @@
 
 #define TILE_SEPARATION 		(5)
 #define EXTRA_TILE_SEPARATION 	(45)
+#define HAND_LEFT_MARGIN		(75)
 
 #define TILES_ASSET_DIR	"assets/tiles/Regular/"
+#define TOTAL_TILES_TEXTURES 	(38)
+
+// tiles
+#define TOTAL_TILES_NUM			(136)
+
+#define TILES_IN_HAND			(13)
+
+// Tiles are represented as follows:
+//-----------------------------------
+//		Pin1-9		0-8
+//		Sou1-9		9-17
+//		Man1-9		18-26
+//		Ton			27
+//		Nan			28
+//		Sha 		29
+//		Pei 		30
+//		Haku		31
+//		Hatsu		32
+//		Chun		33
+//		Dora5		34-36
+//-----------------------------------
+#define INDIVIDUAL_TILES		(37)
+
+
+
 
 #define TILES_PER_SUIT			(9)
-
-#define TOTAL_TILES_NUM			(136)
-#define TOTAL_TILES_TEXTURES 	(37)
-#define HAND_LEFT_MARGIN		(75)

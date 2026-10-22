@@ -2,6 +2,7 @@
 
 #include "../include/graphutils.h"
 #include "../include/globals.h"
+#include "../include/tileutils.h"
 
 int main(void) {
 	//----------------------------------------
@@ -13,21 +14,23 @@ int main(void) {
 	//---------------------------------------
 
 	Texture2D TileTextures[TOTAL_TILES_TEXTURES];
+	int TileSet[TOTAL_TILES_NUM];
 
 	LoadAllTiles(TileTextures);
 
-	// Rectangle tileBounds = {screenWidth/2.0f - 75, screenHeight/2.0f - 250/2.0f, 150.f, 250.f};
+	GenerateTileSet(TileSet, sizeof(TileSet) / sizeof(TileSet[0]));
 
+	int hand[TILES_IN_HAND];
 
-	// int leftMargin = 75;
+	for (int i = 0; i < TILES_IN_HAND; i++) {
+		hand[i] = TileSet[i];
+	}
 
 
 	while (!WindowShouldClose()) {
 		BeginDrawing();
 
 		ClearBackground(DARKGREEN);
-
-		int hand[TILES_IN_HAND] = {23,24,1,3,4,4,2,2,2,12,12,12,13};
 
 		DrawHand(TileTextures, hand);
 
