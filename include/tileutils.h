@@ -57,7 +57,7 @@ void DrawTile(int tileset[], int** next_draw_ptr, Player* player);
 
 void OrderHand(Player* player, int tiles_to_order);
 
-void DiscardTile(Player* player, int tileidx);
+void DiscardTile(Player* player, int tileidx, bool is_riichi);
 
 void ReplaceRed5(int* tileset, size_t size);
 

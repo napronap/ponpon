@@ -100,8 +100,13 @@ void DrawTile(int tileset[], int** next_draw_ptr, Player* player) {
 	(*next_draw_ptr)++;
 }
 
-void DiscardTile(Player* player, int tileidx) {
-	*player->next_kawa_ptr = player->hand[tileidx];
+void DiscardTile(Player* player, int tileidx, bool is_riichi) {
+	if (tileidx < 0 || tileidx >= TILES_IN_HAND) return;
+	if (player->hand[tileidx] == -1) return;
+	if (player->next_kawa_ptr >= player->kawa + MAX_DISCARDS) return;
+
+	player->next_kawa_ptr->id = player->hand[tileidx];
+	player->next_kawa_ptr->is_riichi = is_riichi;
 	player->next_kawa_ptr++;
 	player->hand[tileidx] = -1;
 }

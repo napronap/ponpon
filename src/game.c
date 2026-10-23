@@ -8,6 +8,7 @@
 
 void InitGame() {
 	LoadAllTileTextures();
+	LoadOtherTextures();
 }
 
 void InitPlayers(Player players[], size_t player_size, Player** current_dealer) {
@@ -18,6 +19,10 @@ void InitPlayers(Player players[], size_t player_size, Player** current_dealer) 
 
         player->current_wind = TON + (firstWind - TON + i) % PLAYERS;
         player->next_kawa_ptr = player->kawa;
+
+        for (int discard = 0; discard < MAX_DISCARDS; discard++) {
+            player->kawa[discard] = (Kawa){.id = -1, .is_riichi = false};
+        }
 
         for (int tile = 0; tile < TILES_IN_HAND; tile++) {
             player->hand[tile] = -1;
@@ -38,6 +43,7 @@ void InitMatch(GameState* game_state) {
 
 	game_state->round_wind = TON;
 	game_state->current_player_turn = game_state->current_dealer;
+	game_state->turn_status = WAITING_FOR_INPUT;
 }
 
 void AdvanceTurn(GameState* game_state) {
@@ -47,7 +53,16 @@ void AdvanceTurn(GameState* game_state) {
 }
 
 void CheckTurn(GameState* game_state) {
+	if (game_state->turn_status == DONE) return;
+
 	if (game_state->turn_status == START) {
+		// temp: "finish" the game if there are no more tiles to draw
+		// TODO: remove
+		if (game_state->next_draw_ptr >= game_state->dead_wall_start_ptr) {
+			game_state->turn_status = DONE;
+			return;
+		}
+
 		DrawTile(game_state->tileset, &game_state->next_draw_ptr, game_state->current_player_turn);
 		OrderHand(game_state->current_player_turn, TILES_IN_HAND - 1);
 		game_state->turn_status = WAITING_FOR_INPUT;
@@ -55,7 +70,7 @@ void CheckTurn(GameState* game_state) {
 
 	// AI brain: it will discard a random tile on its turn
 	if (game_state->current_player_turn != &game_state->players[0]) {
-		DiscardTile(game_state->current_player_turn, GetRandomValue(0, TILES_IN_HAND - 1));
+		DiscardTile(game_state->current_player_turn, GetRandomValue(0, TILES_IN_HAND - 1), false);
 		OrderHand(game_state->current_player_turn, TILES_IN_HAND);
 		game_state->turn_status = DONE;
 		AdvanceTurn(game_state);
@@ -70,7 +85,7 @@ void CheckTurn(GameState* game_state) {
 				if (player->hand[tile] == -1) continue;
 
 				if (CheckCollisionPointRec(mouse, GetRectForTileInHand(tile))) {
-					DiscardTile(player, tile);
+					DiscardTile(player, tile, false);
 					OrderHand(player, TILES_IN_HAND);
 					game_state->turn_status = DONE;
 					AdvanceTurn(game_state);
@@ -83,5 +98,5 @@ void CheckTurn(GameState* game_state) {
 
 
 void AdvanceRound(GameState* game_state) {
-	
+
 }

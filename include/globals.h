@@ -1,8 +1,8 @@
 #pragma once
 
 // graphics
-#define SCREEN_WIDTH 			(1460)
-#define SCREEN_HEIGHT			(820)
+#define SCREEN_WIDTH 			(1600)
+#define SCREEN_HEIGHT			(900)
 
 #define TILE_WIDTH 				(80)
 #define TILE_HEIGHT				(120)
@@ -11,8 +11,9 @@
 #define EXTRA_TILE_SEPARATION 	(45)
 #define HAND_LEFT_MARGIN		(75)
 
-#define TILES_ASSET_DIR	"assets/tiles/Regular/"
+#define TILES_ASSET_DIR			"assets/tiles/Regular/"
 #define TOTAL_TILE_TEXTURES 	(39)
+#define ASSETS_DIR				"assets/"
 
 // tiles
 #define TOTAL_TILES_NUM			(136)
@@ -41,6 +42,13 @@
 #define TILES_PER_WALL			(34)
 
 #define MAX_DISCARDS			(32)
+
+#define RIVER_TILES_PER_ROW	(6)
+#define RIVER_ROWS			(3)
+#define RIVER_TILE_WIDTH		(30)
+#define RIVER_TILE_HEIGHT	(45)
+#define RIVER_TILE_GAP		(3)
+#define RIVER_CENTER_DISTANCE (140)
 
 #define DEAD_WALL_TILES_NUM		(14)
 

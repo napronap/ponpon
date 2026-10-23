@@ -1,15 +1,23 @@
 #pragma once
 
 #include "globals.h"
+#include <stdbool.h>
+
+typedef struct KAWA {
+	int 	id;
+	bool 	is_riichi;
+} Kawa;
 
 typedef struct PLAYER {
 	int 	current_wind;
 	int 	score;
 	int 	hand[TILES_IN_HAND];
-	int 	kawa[MAX_DISCARDS];
-	int*	next_kawa_ptr;
+	Kawa 	kawa[MAX_DISCARDS];
+	Kawa*	next_kawa_ptr;
+	bool 	in_riichi;
 } Player;
 
+// turn phases
 enum {
 	START,
 	WAITING_FOR_INPUT,

@@ -25,9 +25,13 @@ int main(void) {
 
 		BeginDrawing();
 
-		ClearBackground(DARKGREEN);
+		ClearBackground(GRAY);
 
-		RenderHand(GR_TileTextures, M_GameState.players[0].hand);
+		RenderBoard();
+
+		RenderRivers(M_GameState.players);
+
+		RenderHand(M_GameState.players[0].hand);
 
 		EndDrawing();
 	}
