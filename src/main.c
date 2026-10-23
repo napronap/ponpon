@@ -15,25 +15,19 @@ int main(void) {
 	//---------------------------------------
 
 	Texture2D TileTextures[TOTAL_TILES_TEXTURES];
-	int TileSet[TOTAL_TILES_NUM];
-	Player Players[PLAYERS];
 
 	LoadAllTiles(TileTextures);
 
-	GenerateTileSet(TileSet);
+	InitGame();
 
-	SetupPlayers(Players);
-
-	DealTiles(TileSet, Players);
-
-
+	OrderHand(&G_GameState.players[0]);
 
 	while (!WindowShouldClose()) {
 		BeginDrawing();
 
 		ClearBackground(DARKGREEN);
 
-		DrawHand(TileTextures, Players[0].hand);
+		DrawHand(TileTextures, G_GameState.players[0].hand);
 
 		EndDrawing();
 	}

@@ -32,13 +32,17 @@
 //		Hatsu		32
 //		Chun		33
 //		Dora5		34-36
-//		14th tile 	-1
+//		empty tile 	-1
 //-----------------------------------
 #define INDIVIDUAL_TILES		(37)
 
 #define PLAYERS					(4)
 
 #define TILES_PER_WALL			(34)
+
+#define MAX_DISCARDS			(32)
+
+#define DEAD_WALL_NUM			(14)
 
 
 

@@ -1,12 +1,13 @@
 #include <inttypes.h>
+#include <stddef.h>
 #include <stdlib.h>
 #include "raylib.h"
 
 #include "../include/tileutils.h"
 #include "../include/globals.h"
 
-void GenerateTileSet(int* tileset) {
-	for (int pos = 0; pos < TOTAL_TILES_NUM; pos++) {
+void GenerateTileSet(int tileset[], size_t tileset_size) {
+	for (int pos = 0; pos < tileset_size; pos++) {
 		
 		// the actual type as per the tile enum
 		int type = pos / 4;
@@ -23,7 +24,7 @@ void GenerateTileSet(int* tileset) {
 	}
 
 	// shuffle
-	for (int pos = TOTAL_TILES_NUM - 1; pos > 0; pos--) {
+	for (int pos = tileset_size - 1; pos > 0; pos--) {
 		int swap = GetRandomValue(0, pos);
 		int copy = tileset[pos];
 
@@ -32,7 +33,7 @@ void GenerateTileSet(int* tileset) {
 	}
 }
 
-void DealTiles(int* tileset, Player* players) {
+void DealTiles(int tileset[], Player players[], int* next_draw_index) {
 	int dice = GetRandomValue(1,6) + GetRandomValue(1,6);
 
 	int dealerpos = -1;
@@ -61,6 +62,7 @@ void DealTiles(int* tileset, Player* players) {
 				int dst = round * 4 + tile;
 
 				players[player].hand[dst] = tileset[src];
+				tileset[src] = -1;
 
 				tileInWall++;
 
@@ -77,6 +79,54 @@ void DealTiles(int* tileset, Player* players) {
 		players[i].hand[TILES_IN_HAND - 1] = -1;
 	}
 	players[dealerpos].hand[TILES_IN_HAND - 1] = tileset[wall * TILES_PER_WALL + tileInWall];
+	tileset[wall * TILES_PER_WALL + tileInWall] = -1;
+	*next_draw_index = wall * TILES_PER_WALL + tileInWall + 1;
+}
+
+void DrawTile(int tileset[], int* next_draw_index, Player* player) {
+	player->hand[TILES_IN_HAND-1] = tileset[*next_draw_index];
+	tileset[*next_draw_index] = -1;
+
+	// TODO: actually calculate the next draw index according to wall etc
+	*next_draw_index += 1;
+}
+
+void DiscardTile(Player* player, int tileidx) {
+	player->kawa[player->current_kawa_size] = player->hand[tileidx];
+	player->current_kawa_size += 1;
+	player->hand[tileidx] = -1;
+}
+
+int compare(const void* a, const void* b) {
+	int inta = *(int*)a;
+	int intb = *(int*)b;
+
+	// -1 represents hand empty slots (be it by calling chii/kan/pon or by the empty 14th tile)
+	// so they should always go to the back
+
+	if (inta == -1 && intb ==-1) {
+		return 0;
+	}
+
+	if (inta == -1) {
+		return 1;
+	}
+
+	if (intb == -1) {
+		return -1;
+	}
+
+	int copy[] = {inta, intb};
+
+	ReplaceRed5(copy, 2);
+
+	return (copy[0] - copy[1]);
+}
+
+void OrderHand(Player* player) {
+	// -1 to size so we only order the first 13
+	// it will never happen that we need to order the drawn tile
+	qsort(player->hand, (sizeof(player->hand) / sizeof(player->hand[0])) - 1, sizeof(player->hand[0]), compare);
 }
 
 void ReplaceRed5(int* tileset, size_t size) {
