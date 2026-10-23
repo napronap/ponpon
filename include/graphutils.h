@@ -1,11 +1,16 @@
 #pragma once
 
 #include "raylib.h"
+#include "../include/globals.h"
+
+extern Texture2D GR_TileTextures[TOTAL_TILE_TEXTURES];
 
 Texture2D GenerateTileTexture(Image tileBg, char* tileName);
 
-void LoadAllTiles(Texture2D tilesTxtArr[]);
+void LoadAllTileTextures();
 
-void DrawHand(Texture2D tilesTxtArr[], int* handTiles);
+void RenderHand(Texture2D tilesTxtArr[], int* handTiles);
 
-Rectangle GetRectForTileInHand(int posInHand);
+void RenderRiver();
+
+Rectangle GetRectForTileInHand(int tileidx);

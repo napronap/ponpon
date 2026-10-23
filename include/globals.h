@@ -12,7 +12,7 @@
 #define HAND_LEFT_MARGIN		(75)
 
 #define TILES_ASSET_DIR	"assets/tiles/Regular/"
-#define TOTAL_TILES_TEXTURES 	(38)
+#define TOTAL_TILE_TEXTURES 	(39)
 
 // tiles
 #define TOTAL_TILES_NUM			(136)

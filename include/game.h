@@ -10,12 +10,23 @@ typedef struct PLAYER {
 	int*	next_kawa_ptr;
 } Player;
 
+enum {
+	START,
+	WAITING_FOR_INPUT,
+	DONE
+};
+
 typedef struct GAME_STATE {
 	int 	tileset[TOTAL_TILES_NUM];
 	int 	round_wind;
 	int 	round_n;
 	int 	honba;
 	Player 	players[PLAYERS];
+
+	int 	turn_status;
+
+	// ptr in players
+	Player* current_player_turn;
 
 	// ptr in players for the current dealer
 	Player* current_dealer;
@@ -27,4 +38,8 @@ typedef struct GAME_STATE {
 	int* 	dead_wall_start_ptr;
 } GameState;
 
-void InitGame(GameState* game_state);
+void InitMatch(GameState* game_state);
+
+void InitGame();
+
+void CheckTurn(GameState* game_state);

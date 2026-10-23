@@ -132,10 +132,10 @@ int compare(const void* a, const void* b) {
 	return (copy[0] - copy[1]);
 }
 
-void OrderHand(Player* player) {
-	// -1 to size so we only order the first 13
-	// it will never happen that we need to order the drawn tile
-	qsort(player->hand, (sizeof(player->hand) / sizeof(player->hand[0])) - 1, sizeof(player->hand[0]), compare);
+void OrderHand(Player* player, int tiles_to_order) {
+	// when we pick up a tile, we will only order the first 13
+	// order all after discarding (14) so that the discarded tile goes back to the end of the array
+	qsort(player->hand, tiles_to_order, sizeof(player->hand[0]), compare);
 }
 
 void ReplaceRed5(int* tileset, size_t size) {

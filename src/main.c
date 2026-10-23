@@ -2,7 +2,6 @@
 
 #include "../include/graphutils.h"
 #include "../include/globals.h"
-#include "../include/tileutils.h"
 #include "../include/game.h"
 
 int main(void) {
@@ -14,22 +13,21 @@ int main(void) {
 	SetTargetFPS(60);
 	//---------------------------------------
 
-	Texture2D TileTextures[TOTAL_TILES_TEXTURES];
-
-	LoadAllTiles(TileTextures);
-
 	GameState M_GameState;
 
-	InitGame(&M_GameState);
+	InitGame();
 
-	OrderHand(&M_GameState.players[0]);
+	InitMatch(&M_GameState);
 
 	while (!WindowShouldClose()) {
+
+		CheckTurn(&M_GameState);
+
 		BeginDrawing();
 
 		ClearBackground(DARKGREEN);
 
-		DrawHand(TileTextures, M_GameState.players[0].hand);
+		RenderHand(GR_TileTextures, M_GameState.players[0].hand);
 
 		EndDrawing();
 	}

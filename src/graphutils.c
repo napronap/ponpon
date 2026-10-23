@@ -4,6 +4,8 @@
 #include "../include/graphutils.h"
 #include "../include/globals.h"
 
+Texture2D GR_TileTextures[];
+
 Texture2D GenerateTileTexture(Image tileBg, char* tileName) {
 	float tileContentW = TILE_WIDTH * .9f;
 	float tileContentH = TILE_HEIGHT * .9f;
@@ -33,41 +35,44 @@ Texture2D GenerateTileTexture(Image tileBg, char* tileName) {
 	return tileTexture;
 };
 
-void LoadAllTiles(Texture2D tilesTxtArr[]) {
-	Image tileBg = LoadImage(TILES_ASSET_DIR"Front.png");
+void LoadAllTileTextures() {
+	Image tileBg = LoadImage(TilesCatalog[TOTAL_TILE_TEXTURES - 1]);
 
-	for (int i = 0; i < TOTAL_TILES_TEXTURES; i++) {
-		tilesTxtArr[i] = GenerateTileTexture(tileBg, TilesCatalog[i]);
+	for (int i = 0; i < TOTAL_TILE_TEXTURES; i++) {
+		if (i == TOTAL_TILE_TEXTURES -1 ) continue;
+		GR_TileTextures[i] = GenerateTileTexture(tileBg, TilesCatalog[i]);
 	}
 
 	UnloadImage(tileBg);
 }
 
-Rectangle GetRectForTileInHand(int margin) {
+Rectangle GetRectForTileInHand(int tileidx) {
+	int extraMargin = tileidx == TILES_IN_HAND - 1 ? 15 : 0;
+	int margin = HAND_LEFT_MARGIN + tileidx * (TILE_WIDTH + TILE_SEPARATION) + extraMargin;
 	Rectangle tileBounds = {margin, SCREEN_HEIGHT - TILE_HEIGHT - 15, TILE_WIDTH, TILE_HEIGHT};
+
+	// Keep the raised part inside the hover area so the tile does not jump back down.
+	Rectangle hoverBounds = tileBounds;
+	hoverBounds.y -= 15;
+	hoverBounds.height += 15;
+
+	if (CheckCollisionPointRec(GetMousePosition(), hoverBounds)) {
+		tileBounds.y -= 15;
+	}
 
 	return tileBounds;
 }
 
-void DrawHand(Texture2D tilesTxtArr[], int* handTiles) {
+void RenderHand(Texture2D tilesTxtArr[], int* handTiles) {
 	for (int i = 0; i < TILES_IN_HAND; i++) {
 		if(handTiles[i] == -1) continue;
 
-		int drawMargin = 0;
-
-		if (i == TILES_IN_HAND - 1) {
-			drawMargin = 15;
-		}
-
-		int margin = HAND_LEFT_MARGIN + i * TILE_WIDTH + i * TILE_SEPARATION + drawMargin;
-
-		int verticalOffset = 15;
-
-		if (CheckCollisionPointRec(GetMousePosition(), GetRectForTileInHand(margin))) {
-			verticalOffset = 30;
-		}
-
-		DrawTexture(tilesTxtArr[handTiles[i]], margin, SCREEN_HEIGHT - TILE_HEIGHT - verticalOffset, WHITE);
+		Rectangle tileBounds = GetRectForTileInHand(i);
+		DrawTexture(tilesTxtArr[handTiles[i]], tileBounds.x, tileBounds.y, WHITE);
 	}
+}
+
+void RenderRiver() {
+
 }
 

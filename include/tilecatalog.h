@@ -41,4 +41,5 @@ char* TilesCatalog[] = {
 	TILES_ASSET_DIR"Sou5-Dora.png",
 	TILES_ASSET_DIR"Man5-Dora.png",
 	TILES_ASSET_DIR"Back.png",
+	TILES_ASSET_DIR"Front.png"
 };
