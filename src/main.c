@@ -18,16 +18,18 @@ int main(void) {
 
 	LoadAllTiles(TileTextures);
 
-	InitGame();
+	GameState M_GameState;
 
-	OrderHand(&G_GameState.players[0]);
+	InitGame(&M_GameState);
+
+	OrderHand(&M_GameState.players[0]);
 
 	while (!WindowShouldClose()) {
 		BeginDrawing();
 
 		ClearBackground(DARKGREEN);
 
-		DrawHand(TileTextures, G_GameState.players[0].hand);
+		DrawHand(TileTextures, M_GameState.players[0].hand);
 
 		EndDrawing();
 	}

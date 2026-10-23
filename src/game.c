@@ -4,41 +4,33 @@
 #include "../include/tileutils.h"
 #include "../include/game.h"
 
-GameState G_GameState;
 
-void InitPlayers(Player players[], size_t player_size, int* current_dealer) {
-	int player = GetRandomValue(TON, PEI);
+void InitPlayers(Player players[], size_t player_size, Player** current_dealer) {
+	int firstWind = GetRandomValue(TON, PEI);
 
-	// init all tiles in hand to -1
-	for (int i = 0; i < player_size; i++) {
-		for (int tile = 0; tile < TILES_IN_HAND; tile++) {
-			players[i].hand[tile] = -1;
-		}
-	}
+    for (size_t i = 0; i < player_size; i++) {
+        Player* player = &players[i];
 
-	players[0].current_wind = player;
-	if (player == TON) {
-		*current_dealer = 0;
-	}
+        player->current_wind = TON + (firstWind - TON + i) % PLAYERS;
+        player->next_kawa_ptr = player->kawa;
 
-	// init all winds and set current_dealer in the game state
-	for (int i = 0; i < player_size - 1; i++) {
-		if (players[i].current_wind + 1 > PEI) {
-			players[i+1].current_wind = TON;
-			*current_dealer = i + 1;
-		} else {
-			players[i+1].current_wind = players[i].current_wind + 1;
-		}
-	}
+        for (int tile = 0; tile < TILES_IN_HAND; tile++) {
+            player->hand[tile] = -1;
+        }
+
+        if (player->current_wind == TON) {
+            *current_dealer = player;
+        }
+    }
 }
 
-void InitGame() {
-	G_GameState.round_wind = TON;
+void InitGame(GameState* game_state) {
+	game_state->round_wind = TON;
 
-	InitPlayers(G_GameState.players, sizeof(G_GameState.players) / sizeof(G_GameState.players[0]), &G_GameState.current_dealer);
+	InitPlayers(game_state->players, sizeof(game_state->players) / sizeof(game_state->players[0]), &game_state->current_dealer);
 
-	GenerateTileSet(G_GameState.tileset, sizeof(G_GameState.tileset) / sizeof(G_GameState.tileset[0]));
+	GenerateTileSet(game_state->tileset, sizeof(game_state->tileset) / sizeof(game_state->tileset[0]));
 
-	DealTiles(G_GameState.tileset, G_GameState.players, &G_GameState.next_draw_index);
+	DealTiles(game_state->tileset, game_state->players, game_state->current_dealer, &game_state->dead_wall_start_ptr, &game_state->next_draw_ptr);
 
 }

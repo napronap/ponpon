@@ -7,7 +7,7 @@ typedef struct PLAYER {
 	int 	score;
 	int 	hand[TILES_IN_HAND];
 	int 	kawa[MAX_DISCARDS];
-	int 	current_kawa_size;
+	int*	next_kawa_ptr;
 } Player;
 
 typedef struct GAME_STATE {
@@ -15,11 +15,16 @@ typedef struct GAME_STATE {
 	int 	round_wind;
 	int 	round_n;
 	int 	honba;
-	int 	current_dealer;
-	int 	next_draw_index;
 	Player 	players[PLAYERS];
+
+	// ptr in players for the current dealer
+	Player* current_dealer;
+
+	// ptr in tileset for the next draw
+	int* 	next_draw_ptr;
+
+	// ptr in the tileset for where the dead wall starts
+	int* 	dead_wall_start_ptr;
 } GameState;
 
-extern GameState G_GameState;
-
-void InitGame();
+void InitGame(GameState* game_state);

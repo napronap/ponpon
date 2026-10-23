@@ -33,67 +33,76 @@ void GenerateTileSet(int tileset[], size_t tileset_size) {
 	}
 }
 
-void DealTiles(int tileset[], Player players[], int* next_draw_index) {
+void DealTiles(int tileset[], Player players[], Player* current_dealer, int** dead_wall_start_ptr, int** next_draw_ptr) {
 	int dice = GetRandomValue(1,6) + GetRandomValue(1,6);
 
-	int dealerpos = -1;
+	ptrdiff_t dealerpos_idx = current_dealer - players;
 
-	for (int i = 0; i < PLAYERS; i++) {
-		if (players[i].current_wind == TON) {
-			dealerpos = i;
-			break;
-		}
-	}
+	int startingwall = (dealerpos_idx + dice - 1) % PLAYERS;
 
-	int startingwall = (dealerpos + dice - 1) % PLAYERS;
+	int orderedTiles[TOTAL_TILES_NUM];
 
-	int tileInWall = dice * 2;
-	int wall = startingwall;
+    int wall = startingwall;
+    int tileInWall = dice * 2;
 
-	// three rounds of four tiles, then one tile for each player
-	for (int round = 0; round < 4; round++) {
-		int tilesThisRound = round < 3 ? 4 : 1;
+    // reorder walls so that our tileset is easier to read
+    for (int dst = 0; dst < TOTAL_TILES_NUM; dst++) {
+        int src = wall * TILES_PER_WALL + tileInWall;
 
-		for (int j = 0; j < PLAYERS; j++) {
-			int player = (dealerpos + j) % PLAYERS;
+        orderedTiles[dst] = tileset[src];
 
-			for (int tile = 0; tile < tilesThisRound; tile++) {
-				int src = wall * TILES_PER_WALL + tileInWall;
-				int dst = round * 4 + tile;
+        tileInWall++;
 
-				players[player].hand[dst] = tileset[src];
-				tileset[src] = -1;
+        if (tileInWall == TILES_PER_WALL) {
+            tileInWall = 0;
+            wall = (wall + PLAYERS - 1) % PLAYERS;
+        }
+    }
 
-				tileInWall++;
+    // apply to the tileset
+    for (int i = 0; i < TOTAL_TILES_NUM; i++) {
+        tileset[i] = orderedTiles[i];
+    }
 
-				if (tileInWall == TILES_PER_WALL) {
-					tileInWall = 0;
-					wall = (wall + PLAYERS - 1) % PLAYERS;
-				}
-			}
-		}
-	}
+    (*dead_wall_start_ptr) = &tileset[TOTAL_TILES_NUM - DEAD_WALL_TILES_NUM];
+    (*next_draw_ptr) = tileset;
+
+	// three rounds of 4 tiles 
+	// one round of 1 tile
+    for (int round = 0; round < 4; round++) {
+    	int tilesThisRound = round < 3 ? 4 : 1;
+
+    	for (int thisplayer = 0; thisplayer < PLAYERS; thisplayer++) {
+    		int player_to_deal = (dealerpos_idx + thisplayer) % PLAYERS;
+
+    		for (int tile = 0; tile < tilesThisRound; tile++) {
+    			players[player_to_deal].hand[round * 4 + tile] = **next_draw_ptr;
+    			**next_draw_ptr = -1;
+    			(*next_draw_ptr)++;
+    		}
+    	}
+    }
 
 	// east starts with 14 tiles, the others have an empty final slot
 	for (int i = 0; i < PLAYERS; i++) {
 		players[i].hand[TILES_IN_HAND - 1] = -1;
 	}
-	players[dealerpos].hand[TILES_IN_HAND - 1] = tileset[wall * TILES_PER_WALL + tileInWall];
-	tileset[wall * TILES_PER_WALL + tileInWall] = -1;
-	*next_draw_index = wall * TILES_PER_WALL + tileInWall + 1;
+
+	players[dealerpos_idx].hand[TILES_IN_HAND - 1] = **next_draw_ptr;
+	**next_draw_ptr = -1;
+	(*next_draw_ptr)++;
 }
 
-void DrawTile(int tileset[], int* next_draw_index, Player* player) {
-	player->hand[TILES_IN_HAND-1] = tileset[*next_draw_index];
-	tileset[*next_draw_index] = -1;
+void DrawTile(int tileset[], int** next_draw_ptr, Player* player) {
+	player->hand[TILES_IN_HAND-1] = **next_draw_ptr;
 
-	// TODO: actually calculate the next draw index according to wall etc
-	*next_draw_index += 1;
+	**next_draw_ptr = -1;
+	(*next_draw_ptr)++;
 }
 
 void DiscardTile(Player* player, int tileidx) {
-	player->kawa[player->current_kawa_size] = player->hand[tileidx];
-	player->current_kawa_size += 1;
+	*player->next_kawa_ptr = player->hand[tileidx];
+	player->next_kawa_ptr++;
 	player->hand[tileidx] = -1;
 }
 

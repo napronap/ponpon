@@ -42,7 +42,7 @@
 
 #define MAX_DISCARDS			(32)
 
-#define DEAD_WALL_NUM			(14)
+#define DEAD_WALL_TILES_NUM		(14)
 
 
 
