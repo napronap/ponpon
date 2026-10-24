@@ -111,7 +111,7 @@ void DiscardTile(Player* player, int tileidx, bool is_riichi) {
 	player->hand[tileidx] = -1;
 }
 
-int compare(const void* a, const void* b) {
+static int compare(const void* a, const void* b) {
 	int inta = *(int*)a;
 	int intb = *(int*)b;
 
@@ -137,10 +137,10 @@ int compare(const void* a, const void* b) {
 	return (copy[0] - copy[1]);
 }
 
-void OrderHand(Player* player, int tiles_to_order) {
+void OrderHand(int hand[], int tiles_to_order) {
 	// when we pick up a tile, we will only order the first 13
 	// order all after discarding (14) so that the discarded tile goes back to the end of the array
-	qsort(player->hand, tiles_to_order, sizeof(player->hand[0]), compare);
+	qsort(hand, tiles_to_order, sizeof(hand[0]), compare);
 }
 
 void ReplaceRed5(int* tileset, size_t size) {

@@ -46,8 +46,8 @@ typedef struct GAME_STATE {
 	int* 	dead_wall_start_ptr;
 } GameState;
 
-void InitMatch(GameState* game_state);
-
 void InitGame();
+
+void InitMatch(GameState* game_state);
 
 void CheckTurn(GameState* game_state);

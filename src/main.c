@@ -3,6 +3,7 @@
 #include "../include/graphutils.h"
 #include "../include/globals.h"
 #include "../include/game.h"
+#include "../include/debug.h"
 
 int main(void) {
 	//----------------------------------------
@@ -21,6 +22,9 @@ int main(void) {
 
 	while (!WindowShouldClose()) {
 
+		// DEBUG
+		ActivateDebug(&M_GameState);
+
 		CheckTurn(&M_GameState);
 
 		BeginDrawing();
@@ -31,7 +35,10 @@ int main(void) {
 
 		RenderRivers(M_GameState.players);
 
-		RenderHand(M_GameState.players[0].hand);
+		if (!DEBUG_MODE) RenderHand(M_GameState.players[0].hand);
+
+		// DEBUG
+		DrawDebug();
 
 		EndDrawing();
 	}

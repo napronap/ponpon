@@ -55,7 +55,7 @@ void DealTiles(int tileset[], Player players[], Player* current_dealer, int** de
 // draw one tile on a player's turn
 void DrawTile(int tileset[], int** next_draw_ptr, Player* player);
 
-void OrderHand(Player* player, int tiles_to_order);
+void OrderHand(int hand[], int tiles_to_order);
 
 void DiscardTile(Player* player, int tileidx, bool is_riichi);
 

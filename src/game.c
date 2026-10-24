@@ -4,6 +4,7 @@
 #include "../include/globals.h"
 #include "../include/tileutils.h"
 #include "../include/graphutils.h"
+#include "../include/debug.h"
 #include "../include/game.h"
 
 void InitGame() {
@@ -46,13 +47,14 @@ void InitMatch(GameState* game_state) {
 	game_state->turn_status = WAITING_FOR_INPUT;
 }
 
-void AdvanceTurn(GameState* game_state) {
+static void AdvanceTurn(GameState* game_state) {
 	ptrdiff_t nextpos_idx = (game_state->current_player_turn - game_state->players + 1) % PLAYERS;
 	game_state->current_player_turn = &game_state->players[nextpos_idx];
 	game_state->turn_status = START;
 }
 
 void CheckTurn(GameState* game_state) {
+	if (DEBUG_MODE) return;
 	if (game_state->turn_status == DONE) return;
 
 	if (game_state->turn_status == START) {
@@ -64,14 +66,14 @@ void CheckTurn(GameState* game_state) {
 		}
 
 		DrawTile(game_state->tileset, &game_state->next_draw_ptr, game_state->current_player_turn);
-		OrderHand(game_state->current_player_turn, TILES_IN_HAND - 1);
+		OrderHand(game_state->current_player_turn->hand, TILES_IN_HAND - 1);
 		game_state->turn_status = WAITING_FOR_INPUT;
 	}
 
 	// AI brain: it will discard a random tile on its turn
 	if (game_state->current_player_turn != &game_state->players[0]) {
 		DiscardTile(game_state->current_player_turn, GetRandomValue(0, TILES_IN_HAND - 1), false);
-		OrderHand(game_state->current_player_turn, TILES_IN_HAND);
+		OrderHand(game_state->current_player_turn->hand, TILES_IN_HAND);
 		game_state->turn_status = DONE;
 		AdvanceTurn(game_state);
 	} else {
@@ -86,7 +88,7 @@ void CheckTurn(GameState* game_state) {
 
 				if (CheckCollisionPointRec(mouse, GetRectForTileInHand(tile))) {
 					DiscardTile(player, tile, false);
-					OrderHand(player, TILES_IN_HAND);
+					OrderHand(player->hand, TILES_IN_HAND);
 					game_state->turn_status = DONE;
 					AdvanceTurn(game_state);
 					break;
