@@ -36,6 +36,8 @@ int main(void) {
 		RenderRivers(M_GameState.players);
 
 		if (!DEBUG_MODE) RenderHand(M_GameState.players[0].hand);
+		RenderMelds(&M_GameState.players[0]);
+		if (!DEBUG_MODE) RenderMeldOptions(&M_GameState);
 
 		// DEBUG
 		DrawDebug();

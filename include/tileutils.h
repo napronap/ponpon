@@ -50,10 +50,12 @@ enum {
 void GenerateTileSet(int tileset[], size_t tileset_size);
 
 // initial deal tiles
-void DealTiles(int tileset[], Player players[], Player* current_dealer, int** dead_wall_start_ptr, int** next_draw_ptr);
+void DealTiles(int tileset[], Player players[], Player* current_dealer, int** dead_wall_start_ptr, int** next_draw_ptr, int active_dora[MAX_ACTIVE_DORA], int** next_rinshanpai_ptr);
 
 // draw one tile on a player's turn
 void DrawTile(int tileset[], int** next_draw_ptr, Player* player);
+
+bool DrawRinshanTile(GameState* game_state, Player* player);
 
 void OrderHand(int hand[], int tiles_to_order);
 

@@ -4,6 +4,7 @@
 #include "../include/tilecatalog.h"
 #include "../include/graphutils.h"
 #include "../include/globals.h"
+#include "../include/tileutils.h"
 
 Texture2D GR_TileTextures[];
 
@@ -137,6 +138,77 @@ void RenderRivers(const Player players[]) {
 			DrawTexturePro(texture, source, destination, origin, rotation, WHITE);
 
 			columnOffset += footprint + RIVER_TILE_GAP;
+		}
+	}
+}
+
+Rectangle GetRectForMeldOption(int option_index) {
+	return (Rectangle){15, 160 + option_index * 62, 315, 54};
+}
+
+void RenderMeldOptions(const GameState* game_state) {
+	if (game_state->turn_status != WAITING_FOR_MELD_DECISION) return;
+
+	DrawText("Elegir llamada", 20, 115, 22, BLACK);
+	int discard = game_state->meld_discard_tile;
+	if (discard >= 0 && discard < INDIVIDUAL_TILES) {
+		Texture2D texture = GR_TileTextures[discard];
+		DrawTexturePro(texture, (Rectangle){0, 0, texture.width, texture.height},
+			(Rectangle){275, 96, 34, 51}, (Vector2){0, 0}, 0, WHITE);
+	}
+
+	const char* names[] = {"CHII", "PON", "KAN", "ANKAN"};
+	for (int i = 0; i <= game_state->meld_option_count; i++) {
+		Rectangle bounds = GetRectForMeldOption(i);
+		bool hover = CheckCollisionPointRec(GetMousePosition(), bounds);
+		DrawRectangleRounded(bounds, 0.15f, 4, hover ? SKYBLUE : RAYWHITE);
+		DrawRectangleLinesEx(bounds, 2, hover ? DARKBLUE : DARKGRAY);
+		if (i == game_state->meld_option_count) {
+			DrawText("PASS", (int)bounds.x + 14, (int)bounds.y + 17, 20, BLACK);
+			continue;
+		}
+
+		const MeldOption* option = &game_state->meld_options[i];
+		DrawText(names[option->type], (int)bounds.x + 14, (int)bounds.y + 17, 20, BLACK);
+		int size = option->type == KAN ? 4 : 3;
+		for (int tile = 0; tile < size; tile++) {
+			Texture2D texture = GR_TileTextures[option->tiles[tile]];
+			DrawTexturePro(texture, (Rectangle){0, 0, texture.width, texture.height},
+				(Rectangle){bounds.x + 110 + tile * 33, bounds.y + 5, 29, 44},
+				(Vector2){0, 0}, 0, WHITE);
+		}
+	}
+}
+
+void RenderMelds(Player* player) {
+	if (player->meld_count == 0) return;
+	DrawText("Tus melds", SCREEN_WIDTH - 300, 375, 20, BLACK);
+
+	for (int meld = 0; meld < player->meld_count; meld++) {
+		const int* tiles = player->melds[meld];
+		int size = tiles[3] == -1 ? 3 : 4;
+		int first = tiles[0];
+		int second = tiles[1];
+		ReplaceRed5(&first, 1);
+		ReplaceRed5(&second, 1);
+		const char* name = size == 4 ? "KAN" : (first == second ? "PON" : "CHII");
+		int top = 400 + meld * 82;
+		DrawText(name, SCREEN_WIDTH - 300, top, 14, DARKGRAY);
+
+		int called_position = player->meld_from[meld] == 3 ? 0
+			: (player->meld_from[meld] == 2 ? 1 : size - 1);
+		float x = SCREEN_WIDTH - 300;
+		int own_tile = 1;
+		for (int column = 0; column < size; column++) {
+			bool called = column == called_position;
+			int tile = called ? tiles[0] : tiles[own_tile++];
+			Texture2D texture = GR_TileTextures[tile];
+			float footprint = called ? 66 : 44;
+			float center_y = top + 20 + 66 - (called ? 44 : 66) / 2.0f;
+			DrawTexturePro(texture, (Rectangle){0, 0, texture.width, texture.height},
+				(Rectangle){x + footprint / 2, center_y, 44, 66},
+				(Vector2){22, 33}, called ? 90 : 0, WHITE);
+			x += footprint + 3;
 		}
 	}
 }

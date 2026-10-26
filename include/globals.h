@@ -43,6 +43,10 @@
 
 #define MAX_DISCARDS			(32)
 
+#define MELD_MAX_SIZE			(4)
+#define MAX_MELDS				(4)
+#define MAX_MELD_OPTIONS		(8)
+
 #define RIVER_TILES_PER_ROW	(6)
 #define RIVER_ROWS			(3)
 #define RIVER_TILE_WIDTH		(30)
@@ -51,6 +55,8 @@
 #define RIVER_CENTER_DISTANCE (140)
 
 #define DEAD_WALL_TILES_NUM		(14)
+
+#define MAX_ACTIVE_DORA			(5)
 
 
 

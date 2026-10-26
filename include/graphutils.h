@@ -23,3 +23,9 @@ void RenderRivers(const Player players[]);
 void RenderBoard();
 
 Rectangle GetRectForTileInHand(int tileidx);
+
+Rectangle GetRectForMeldOption(int option_index);
+
+void RenderMeldOptions(const GameState* game_state);
+
+void RenderMelds(Player* player);

@@ -33,7 +33,7 @@ void GenerateTileSet(int tileset[], size_t tileset_size) {
 	}
 }
 
-void DealTiles(int tileset[], Player players[], Player* current_dealer, int** dead_wall_start_ptr, int** next_draw_ptr) {
+void DealTiles(int tileset[], Player players[], Player* current_dealer, int** dead_wall_start_ptr, int** next_draw_ptr, int active_dora[MAX_ACTIVE_DORA], int** next_rinshanpai_ptr) {
 	int dice = GetRandomValue(1,6) + GetRandomValue(1,6);
 
 	ptrdiff_t dealerpos_idx = current_dealer - players;
@@ -67,6 +67,14 @@ void DealTiles(int tileset[], Player players[], Player* current_dealer, int** de
     (*dead_wall_start_ptr) = &tileset[TOTAL_TILES_NUM - DEAD_WALL_TILES_NUM];
     (*next_draw_ptr) = tileset;
 
+    for (int i = 0; i < MAX_ACTIVE_DORA; i++) {
+        active_dora[i] = -1;
+    }
+    // first active dora will always be 8 steps from the start of the dead wall
+    active_dora[0] = *(*dead_wall_start_ptr + 8);
+
+    (*next_rinshanpai_ptr) = &tileset[TOTAL_TILES_NUM - 2];
+
 	// three rounds of 4 tiles 
 	// one round of 1 tile
     for (int round = 0; round < 4; round++) {
@@ -98,6 +106,27 @@ void DrawTile(int tileset[], int** next_draw_ptr, Player* player) {
 
 	**next_draw_ptr = -1;
 	(*next_draw_ptr)++;
+}
+
+bool DrawRinshanTile(GameState* game_state, Player* player) {
+	if (game_state->kan_count >= MAX_ACTIVE_DORA - 1) return false;
+	if (game_state->next_draw_ptr >= game_state->dead_wall_start_ptr) return false;
+	if (game_state->next_rinshanpai_ptr == NULL) return false;
+	if (player->hand[TILES_IN_HAND - 1] != -1) return false;
+
+	player->hand[TILES_IN_HAND - 1] = *game_state->next_rinshanpai_ptr;
+	*game_state->next_rinshanpai_ptr = -1;
+	game_state->kan_count++;
+	game_state->dead_wall_start_ptr--;
+
+	// Two stacks, top then bottom, starting at the end of the wall.
+	const int rinshan_indices[] = {TOTAL_TILES_NUM - 2, TOTAL_TILES_NUM - 1,
+		TOTAL_TILES_NUM - 4, TOTAL_TILES_NUM - 3};
+	game_state->next_rinshanpai_ptr = game_state->kan_count < 4
+		? &game_state->tileset[rinshan_indices[game_state->kan_count]] : NULL;
+	game_state->active_dora[game_state->kan_count] =
+		game_state->tileset[TOTAL_TILES_NUM - 6 - 2 * game_state->kan_count];
+	return true;
 }
 
 void DiscardTile(Player* player, int tileidx, bool is_riichi) {
