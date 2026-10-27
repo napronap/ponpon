@@ -14,7 +14,7 @@ typedef enum MELD_NAMES {
 
 typedef struct MELD_OPTION {
 	MeldNames type;
-	// Called tile first, then the exact IDs to remove from the hand; -1 is empty.
+	// Called tile first, then the exact IDs to remove from the hand; -1 is empty
 	int tiles[MELD_MAX_SIZE];
 } MeldOption;
 

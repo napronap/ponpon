@@ -4,7 +4,6 @@
 #include "../include/globals.h"
 #include "../include/tileutils.h"
 #include "../include/graphutils.h"
-#include "../include/debug.h"
 #include "../include/game.h"
 
 void InitGame() {
@@ -23,6 +22,7 @@ void InitPlayers(Player players[], size_t player_size, Player** current_dealer) 
         player->in_riichi = false;
         player->meld_count = 0;
 
+        // could also just declare as {{-1,-1,-1,-1}, etc} and call it a day
         for (int meld = 0; meld < MAX_MELDS; meld++) {
             player->meld_from[meld] = -1;
             for (int tile = 0; tile < MELD_MAX_SIZE; tile++) {
@@ -66,7 +66,6 @@ void AdvanceTurn(GameState* game_state) {
 }
 
 static bool PrepareTurn(GameState* game_state) {
-	if (DEBUG_MODE) return false;
 	if (game_state->turn_status == DONE) return false;
 	if (game_state->turn_status == WAITING_FOR_MELD_DECISION) return false;
 
@@ -86,64 +85,65 @@ static bool PrepareTurn(GameState* game_state) {
 }
 
 static void CheckAITurn(GameState* game_state) {
-	if (!PrepareTurn(game_state)) return;
-
 	// AI brain: it will discard a random tile on its turn
 	int tile_index = GetRandomValue(0, TILES_IN_HAND - 1);
 	int discarded_tile = game_state->current_player_turn->hand[tile_index];
 	DiscardTile(game_state->current_player_turn, tile_index, false);
 	OrderHand(game_state->current_player_turn->hand, TILES_IN_HAND);
+
 	if (CanCallAnyMeld(game_state, discarded_tile)) {
 		game_state->turn_status = WAITING_FOR_MELD_DECISION;
 		return;
 	}
+
 	game_state->turn_status = DONE;
 	AdvanceTurn(game_state);
 }
 
-static void CheckPlayerTurn(GameState* game_state) {
+void CheckTurn(GameState* game_state) {
 	if (!PrepareTurn(game_state)) return;
 
-	// check for player clicks
-	if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
-		Player* player = game_state->current_player_turn;
-		Vector2 mouse = GetMousePosition();
-
-		for (int tile = 0; tile < TILES_IN_HAND; tile++) {
-			if (player->hand[tile] == -1) continue;
-
-			if (CheckCollisionPointRec(mouse, GetRectForTileInHand(tile))) {
-				DiscardTile(player, tile, false);
-				OrderHand(player->hand, TILES_IN_HAND);
-				game_state->turn_status = DONE;
-				AdvanceTurn(game_state);
-				break;
-			}
-		}
-	}
-}
-
-void CheckTurn(GameState* game_state) {
-	if (DEBUG_MODE) return;
-	if (game_state->turn_status == WAITING_FOR_MELD_DECISION) {
-		if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
-			Vector2 mouse = GetMousePosition();
-			for (int option = 0; option <= game_state->meld_option_count; option++) {
-				if (!CheckCollisionPointRec(mouse, GetRectForMeldOption(option))) continue;
-				if (option == game_state->meld_option_count) PassCall(game_state);
-				else CallMeld(game_state, option);
-				break;
-			}
-		}
-		return;
-	}
-	if (game_state->current_player_turn == &game_state->players[0]) {
-		CheckPlayerTurn(game_state);
-	} else {
+	if (game_state->current_player_turn != &game_state->players[0]) {
 		CheckAITurn(game_state);
 	}
 }
 
+
+void CheckPlayerInput(GameState* game_state) {
+	if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
+		Vector2 mouse = GetMousePosition();
+
+		// meld
+		if (game_state->turn_status == WAITING_FOR_MELD_DECISION) {
+			for (int option = 0; option <= game_state->meld_option_count; option++) {
+				if (!CheckCollisionPointRec(mouse, GetRectForMeldOption(option))) continue;
+
+				if (option == game_state->meld_option_count) PassCall(game_state);
+				else CallMeld(game_state, option);
+				break;
+			}
+			// A call or pass consumes this click, even if it changes the phase.
+			return;
+		}
+
+		// tile discard
+		Player* player = &game_state->players[0];
+		if (game_state->turn_status == WAITING_FOR_INPUT
+			&& game_state->current_player_turn == player) {
+			for (int tile = 0; tile < TILES_IN_HAND; tile++) {
+				if (player->hand[tile] == -1) continue;
+
+				if (CheckCollisionPointRec(mouse, GetRectForTileInHand(tile))) {
+					DiscardTile(player, tile, false);
+					OrderHand(player->hand, TILES_IN_HAND);
+					game_state->turn_status = DONE;
+					AdvanceTurn(game_state);
+					break;
+				}
+			}
+		}
+	}
+}
 
 void AdvanceRound(GameState* game_state) {
 

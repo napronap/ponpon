@@ -22,25 +22,32 @@ int main(void) {
 
 	while (!WindowShouldClose()) {
 
-		// DEBUG
+		// open debug, this needs to be outside conditionals to intercept the input
 		ActivateDebug(&M_GameState);
 
-		CheckTurn(&M_GameState);
+		if (DEBUG_MODE) {
+			CheckPlayerInputDebug();
+			CheckDebug();
+		} else {
+			// Handle the displayed state before advancing the turn.
+			CheckPlayerInput(&M_GameState);
+			CheckTurn(&M_GameState);
+		}
 
 		BeginDrawing();
 
-		ClearBackground(GRAY);
+			// always draw these
+			ClearBackground(GRAY);
+			RenderBoard();
+			RenderRivers(M_GameState.players);
+			RenderMelds(&M_GameState.players[0]);
 
-		RenderBoard();
-
-		RenderRivers(M_GameState.players);
-
-		if (!DEBUG_MODE) RenderHand(M_GameState.players[0].hand);
-		RenderMelds(&M_GameState.players[0]);
-		if (!DEBUG_MODE) RenderMeldOptions(&M_GameState);
-
-		// DEBUG
-		DrawDebug();
+			if (DEBUG_MODE) {
+				DrawDebug();
+			} else {
+				RenderHand(M_GameState.players[0].hand);
+				RenderMeldOptions(&M_GameState);
+			}
 
 		EndDrawing();
 	}

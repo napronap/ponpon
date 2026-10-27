@@ -149,7 +149,8 @@ Rectangle GetRectForMeldOption(int option_index) {
 void RenderMeldOptions(const GameState* game_state) {
 	if (game_state->turn_status != WAITING_FOR_MELD_DECISION) return;
 
-	DrawText("Elegir llamada", 20, 115, 22, BLACK);
+	// DrawText("コール", 20, 115, 22, BLACK);
+	DrawText("call", 20, 115, 22, BLACK);
 	int discard = game_state->meld_discard_tile;
 	if (discard >= 0 && discard < INDIVIDUAL_TILES) {
 		Texture2D texture = GR_TileTextures[discard];
@@ -164,7 +165,8 @@ void RenderMeldOptions(const GameState* game_state) {
 		DrawRectangleRounded(bounds, 0.15f, 4, hover ? SKYBLUE : RAYWHITE);
 		DrawRectangleLinesEx(bounds, 2, hover ? DARKBLUE : DARKGRAY);
 		if (i == game_state->meld_option_count) {
-			DrawText("PASS", (int)bounds.x + 14, (int)bounds.y + 17, 20, BLACK);
+			// DrawText("無視", (int)bounds.x + 14, (int)bounds.y + 17, 20, BLACK);
+			DrawText("pass", (int)bounds.x + 14, (int)bounds.y + 17, 20, BLACK);
 			continue;
 		}
 
@@ -182,7 +184,8 @@ void RenderMeldOptions(const GameState* game_state) {
 
 void RenderMelds(Player* player) {
 	if (player->meld_count == 0) return;
-	DrawText("Tus melds", SCREEN_WIDTH - 300, 375, 20, BLACK);
+	// DrawText("面子", SCREEN_WIDTH - 300, 375, 20, BLACK);
+	DrawText("melds", SCREEN_WIDTH - 300, 375, 20, BLACK);
 
 	for (int meld = 0; meld < player->meld_count; meld++) {
 		const int* tiles = player->melds[meld];
@@ -191,7 +194,8 @@ void RenderMelds(Player* player) {
 		int second = tiles[1];
 		ReplaceRed5(&first, 1);
 		ReplaceRed5(&second, 1);
-		const char* name = size == 4 ? "KAN" : (first == second ? "PON" : "CHII");
+		// const char* name = size == 4 ? "カン" : (first == second ? "ポン" : "チー");
+		const char* name = size == 4 ? "kan" : (first == second ? "pon" : "chii");
 		int top = 400 + meld * 82;
 		DrawText(name, SCREEN_WIDTH - 300, top, 14, DARKGRAY);
 

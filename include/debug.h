@@ -9,3 +9,7 @@ extern bool DEBUG_MODE;
 void DrawDebug(void);
 
 void ActivateDebug(GameState* game_state);
+
+void CheckPlayerInputDebug(void);
+
+void CheckDebug(void);

@@ -24,9 +24,11 @@ bool DEBUG_MODE = false;
 
 static DebugState debug_state = {.selected_tile = -1};
 
-static void CheckDebugHand(void) {
+void CheckDebug(void) {
 	Player player = {0};
 	memcpy(player.hand, debug_state.debug_hand, sizeof(player.hand));
+
+	// TODO: change isagari to take hand so it's easier to do here and we don't depend on player
 	debug_state.is_agari = IsAgari(&player);
 }
 
@@ -74,26 +76,24 @@ static void ChangeTileInHand(void) {
 		debug_state.debug_hand[debug_state.selected_tile] = (int)tile;
 		debug_state.selected_tile = -1;
 		ClearTileInput();
-		CheckDebugHand();
 	}
 }
 
-static void ShowTileHelp() {
+static void ShowTileHelp(void) {
 	if (IsKeyPressed(KEY_S)) {
 		debug_state.show_tile_help = !debug_state.show_tile_help;
 	}
 }
 
-static void DebugOrderTiles() {
+static void DebugOrderTiles(void) {
 	if (IsKeyPressed(KEY_O)) {
-		OrderHand(debug_state.debug_hand, 13);
+		OrderHand(debug_state.debug_hand, TILES_IN_HAND - 1);
 		debug_state.selected_tile = -1;
+		ClearTileInput();
 	}
 }
 
 void DrawDebug(void) {
-	if (!DEBUG_MODE) return;
-
 	RenderHand(debug_state.debug_hand);
 	DrawText("debug mode is on!!", 10, 10, 20, DARKGRAY);
 	DrawText(debug_state.is_agari ? "IsAgari: TRUE" : "IsAgari: FALSE",
@@ -138,6 +138,7 @@ void DrawDebug(void) {
 }
 
 void ActivateDebug(GameState* game_state) {
+	// activate debug mode and set it up if state changes to active
 	if (IsKeyPressed(KEY_D)) {
 		DEBUG_MODE = !DEBUG_MODE;
 
@@ -145,13 +146,13 @@ void ActivateDebug(GameState* game_state) {
 			memcpy(debug_state.debug_hand, game_state->players[0].hand, sizeof(debug_state.debug_hand));
 			debug_state.selected_tile = -1;
 			ClearTileInput();
-			CheckDebugHand();
 		}
 	}
 
-	if (DEBUG_MODE) {
-		ChangeTileInHand();
-		ShowTileHelp();
-		DebugOrderTiles();
-	}
+}
+
+void CheckPlayerInputDebug(void) {
+	ChangeTileInHand();
+	ShowTileHelp();
+	DebugOrderTiles();
 }
