@@ -33,7 +33,7 @@ C言語を少し勉強しながら、ゲームエンジンを使わずにゲー�
 
 MSYS2のUCRT64ツールチェーンが必要です。ビルドにはUCRT64版の `clang` を使います。
 
-1. `vars.bat.example` の `MSYS2_ROOT` に、MSYS2のインストール先のルートディレクトリを指定します。
-2. `vars.bat.example` を `vars.bat` にリネームします。
-3. `build.bat` を実行します。
-4. 生成された `bin/ponpon.exe` をリポジトリのルートディレクトリから実行します。ゲームは作業ディレクトリ内の `assets` フォルダーを参照します。
+1. `vars.bat.example`の`MSYS2_ROOT`に、MSYS2のインストール先のルートディレクトリを指定します。
+2. `vars.bat.example`を`vars.bat`にリネームします。
+3. `build.bat`を実行します。
+4. 生成された `bin/ponpon.exe` をリポジトリのルートディレクトリから実行します。ゲームは作業ディレクトリ内の`assets`フォルダーを参照しますので必ずリポジトリのルートから実行してください。
