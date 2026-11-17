@@ -29,7 +29,7 @@ int main(void) {
 			CheckPlayerInputDebug();
 			CheckDebug();
 		} else {
-			// Handle the displayed state before advancing the turn.
+			// Handle the displayed state before advancing the turn
 			CheckPlayerInput(&M_GameState);
 			CheckTurn(&M_GameState);
 		}

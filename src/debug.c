@@ -3,6 +3,7 @@
 #include <stddef.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdio.h>
 
 #include "../include/agari.h"
 #include "../include/debug.h"
@@ -99,6 +100,16 @@ void DrawDebug(void) {
 	DrawText(debug_state.is_agari ? "IsAgari: TRUE" : "IsAgari: FALSE", 10, 36, 20, debug_state.is_agari ? DARKGREEN : MAROON);
 	DrawText("D: exit | RMB: choose tile | O: order tiles | S: show tile help reference", 10, 66, 16, DARKGRAY);
 	DrawText("ID 0-36 + Enter", 10, 88, 16, DARKGRAY);
+
+	int hand34[34] = {0};
+	To34Tiles(debug_state.debug_hand, hand34);
+
+	for (int i = 0; i < 34; ++i) {
+	    int x = 10 + (i % 9) * 36;
+	    int y = 400 + (i / 9) * 22;
+	    DrawText(TextFormat("%02d=%d", i, hand34[i]), x, y, 14, DARKGRAY);
+	}
+
 	int debug_text_last_pos = 88;
 
 	for (int i = 0; i < TILES_IN_HAND; i++) {

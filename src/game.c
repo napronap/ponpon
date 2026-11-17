@@ -122,7 +122,7 @@ void CheckPlayerInput(GameState* game_state) {
 				else CallMeld(game_state, option);
 				break;
 			}
-			// A call or pass consumes this click, even if it changes the phase.
+			// A call or pass consumes this click, even if it changes the phase
 			return;
 		}
 
